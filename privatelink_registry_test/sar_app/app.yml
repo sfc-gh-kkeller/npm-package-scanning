@@ -1,0 +1,17 @@
+version: 2
+name: PL_NPM_DEMO
+database: NPM_PL
+schema: T
+query_warehouse: COMPUTE_WH
+build_eai: PRIVATE_NPM_EAI
+ignore:
+  - node_modules
+  - .git
+install:
+  commands:
+    - ["npm", "install", "--no-audit", "--no-fund"]
+build:
+  commands:
+    - ["npm", "run", "build"]
+run:
+  command: ["node", "server.js"]

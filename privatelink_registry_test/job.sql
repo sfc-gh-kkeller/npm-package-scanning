@@ -1,0 +1,8 @@
+EXECUTE JOB SERVICE IN COMPUTE POOL NPM_PL_POOL NAME=NPM_PL.T.NPM_TEST_JOB
+  EXTERNAL_ACCESS_INTEGRATIONS=(PRIVATE_NPM_EAI)
+  FROM SPECIFICATION '
+spec:
+  containers:
+  - name: t
+    image: /npm_pl/t/images/npmtest:latest
+';

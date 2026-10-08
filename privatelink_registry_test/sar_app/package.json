@@ -1,0 +1,1 @@
+{"name":"pl-npm-demo","version":"1.0.0","private":true,"scripts":{"build":"echo no-build","start":"node server.js"},"dependencies":{"@kk/hello-private":"1.0.0"}}

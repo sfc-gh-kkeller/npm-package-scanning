@@ -1,0 +1,46 @@
+#cloud-config
+package_update: true
+packages: [curl]
+write_files:
+  - path: /opt/verdaccio/config.yaml
+    content: |
+      storage: /opt/verdaccio/storage
+      auth:
+        htpasswd:
+          file: /opt/verdaccio/htpasswd
+          max_users: 1
+      # No uplinks: only locally published packages are served
+      packages:
+        '@kk/*':
+          access: $all
+          publish: $authenticated
+        '**':
+          access: $all
+          publish: $authenticated
+      listen: 0.0.0.0:4873
+      log: { type: stdout, format: pretty, level: http }
+  - path: /etc/systemd/system/verdaccio.service
+    content: |
+      [Unit]
+      Description=Verdaccio
+      After=network.target
+      [Service]
+      ExecStart=/usr/bin/verdaccio --config /opt/verdaccio/config.yaml
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target
+  - path: /opt/pkg/package.json
+    content: |
+      {"name":"@kk/hello-private","version":"1.0.0","main":"index.js"}
+  - path: /opt/pkg/index.js
+    content: |
+      module.exports = () => "hello from the PRIVATE registry over Azure Private Link";
+runcmd:
+  - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  - apt-get install -y nodejs
+  - npm install -g verdaccio@5
+  - mkdir -p /opt/verdaccio/storage && touch /opt/verdaccio/htpasswd
+  - systemctl daemon-reload && systemctl enable --now verdaccio
+  - sleep 10
+  - curl -s -XPUT -H 'content-type: application/json' -d '{"name":"pub","password":"pubpass123"}' http://127.0.0.1:4873/-/user/org.couchdb.user:pub | sed -n 's/.*"token":"\([^"]*\)".*/\1/p' > /root/token
+  - cd /opt/pkg && npm publish --registry http://127.0.0.1:4873/ --//127.0.0.1:4873/:_authToken=$(cat /root/token)

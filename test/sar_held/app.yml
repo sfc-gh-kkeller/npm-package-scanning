@@ -1,0 +1,14 @@
+version: 2
+name: BN_SAR_HELD
+query_warehouse: DEVCONTAINER_WH
+database: BLESSED_NPM
+schema: REG
+ignore: [node_modules]
+install:
+  commands:
+    - ["npm", "install", "--no-audit", "--no-fund"]
+build:
+  commands:
+    - ["npm", "run", "build"]
+run:
+  command: ["node", "server.js"]

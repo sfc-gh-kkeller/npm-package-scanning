@@ -1,0 +1,13 @@
+# local / generated
+.DS_Store
+__pycache__/
+*.pyc
+node_modules/
+output/
+out/
+.snowflake/
+*.pat
+*.pem
+*.p8
+.env
+connections.toml
